@@ -42,11 +42,11 @@ L2:
 	mov	DWORD PTR [esp], OFFSET FLAT:LC2
 	call	_scanf
 	cmp	ebx, DWORD PTR [ebp-12]
-	jge	L2
+	jge	L3
 	mov	DWORD PTR [esp], OFFSET FLAT:LC3
 	jmp	L7
 L3:
-	jle	L5
+	je	L5
 	mov	DWORD PTR [esp], OFFSET FLAT:LC4
 L7:
 	call	_puts
