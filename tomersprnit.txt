@@ -1,0 +1,12 @@
+push 1574
+mov	DWORD PTR [esp], OFFSET FLAT:LCTOMER
+call _printf
+
+
+
+
+
+push eax
+	mov ebx, 100
+	div ebx
+	mov ebx, edx

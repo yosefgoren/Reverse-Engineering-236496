@@ -62,7 +62,7 @@ L2:
 	jge	L4
 	mov	DWORD PTR [esp], OFFSET FLAT:LC4
 	call	_puts
-	jmp	L3
+	jmp	L6
 L4:
 	mov	DWORD PTR [esp], OFFSET FLAT:LC5
 	call	_puts

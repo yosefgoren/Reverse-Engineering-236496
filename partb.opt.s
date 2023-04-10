@@ -27,13 +27,15 @@ _main:
 	call	___main
 	mov	DWORD PTR [esp], 0
 	call	_time
+	mov	DWORD PTR [esp], eax
+	call 	_srand
 	call	_rand
 	mov	ecx, 100
-	cdq
 	mov	DWORD PTR [esp], OFFSET FLAT:LC0
-	idiv	ecx
+	div	ecx
+	mov ebx, edx
+	add ebx, 1
 	mov	DWORD PTR [ebp-12], -1
-	lea	ebx, [edx+1]
 	call	_puts
 L2:
 	mov	DWORD PTR [esp], OFFSET FLAT:LC1
