@@ -3,12 +3,14 @@
 	.def	___main;	.scl	2;	.type	32;	.endef
 	.section .rdata,"dr"
 	.align 4
+LCTOMER:
+	.ascii "the random is : %d\n\0"
 LC0:
 	.ascii "Guess a number between 1 and 100\0"
 LC1:
 	.ascii "Enter your guess: \0"
 LC2:
-	.ascii "%c\0"
+	.ascii "%d\0"
 LC3:
 	.ascii "Too big, try again.\0"
 LC4:
@@ -41,6 +43,18 @@ _main:
 	sub	ecx, eax
 	mov	eax, ecx
 	add	eax, 1
+
+	push ecx
+	push edx
+	push eax
+	push 1574
+	mov	DWORD PTR [esp], OFFSET FLAT:LCTOMER
+	call _printf
+	pop eax
+	pop eax
+	pop edx
+	pop ecx
+
 	mov	DWORD PTR [ebp-4], eax
 	mov	DWORD PTR [ebp-8], -1
 	mov	DWORD PTR [esp], OFFSET FLAT:LC0
@@ -48,14 +62,16 @@ _main:
 L6:
 	mov	DWORD PTR [esp], OFFSET FLAT:LC1
 	call	_printf
-	lea	eax, [ebp-8]
+	lea	esi, [ebp-8]
+	mov	DWORD PTR [esp+4], esi
+	mov	DWORD PTR [esp], OFFSET FLAT:LC2
 	call	_scanf
 	mov	eax, DWORD PTR [ebp-8]
 	cmp	eax, DWORD PTR [ebp-4]
 	jle	L2
 	mov	DWORD PTR [esp], OFFSET FLAT:LC3
 	call	_puts
-	jmp	L3
+	jmp	L6
 L2:
 	mov	eax, DWORD PTR [ebp-8]
 	cmp	eax, DWORD PTR [ebp-4]

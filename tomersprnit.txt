@@ -1,7 +1,13 @@
+push ecx
+push edx
+push eax
 push 1574
 mov	DWORD PTR [esp], OFFSET FLAT:LCTOMER
 call _printf
-
+pop eax
+pop eax
+pop edx
+pop ecx
 
 
 
@@ -10,3 +16,10 @@ push eax
 	mov ebx, 100
 	div ebx
 	mov ebx, edx
+
+
+
+
+mov eax, 6
+cmp	eax, 7
+jle	L2
