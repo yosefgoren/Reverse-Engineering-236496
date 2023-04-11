@@ -1,0 +1,452 @@
+html {
+    min-height:100%;
+    background: url("../res/background.png");
+    background-size:cover;
+    box-shadow:inset 0 0 0 2000px rgba(255,255,255,0.45);
+
+    overflow: hidden;
+
+    padding: 0;
+}
+
+body {
+    padding: 0;
+    margin: 0;
+}
+
+#site_map {
+    position: absolute;
+    width: 100%;
+
+    left: 0; right: 0;
+    top: 0; bottom: 0;
+    margin: auto;
+
+    height: 350px;
+
+    filter: drop-shadow(-1px 6px 3px rgba(50, 50, 0, 0.5));
+}
+
+#menu_container {
+    width: 500px;
+    height: 400px;
+
+    position: absolute;
+
+    right: 40px;
+    bottom: 40px;
+
+    z-index: 2;
+}
+
+.close#menu_container {
+    z-index: 0;
+}
+
+.hex {
+    -webkit-clip-path: polygon(75% 0, 100% 50%, 75% 100%, 25% 100%, 0 50%, 25% 0);
+    clip-path: polygon(75% 0, 100% 50%, 75% 100%, 25% 100%, 0 50%, 25% 0);
+}
+
+.hex__frame {
+    position: absolute;
+    background: white;
+
+    width: 148px;
+    height: 124px;
+
+    transform: rotate(90);
+}
+
+.inner_hex {
+    position: absolute;
+
+    width: 138px;
+    height: 114px;
+
+    top: 5px;
+    left: 5px;
+}
+
+.hex_border {
+    position: absolute;
+
+    top: 2px;
+    left: 2px;
+
+    width: 134px;
+    height: 110px;
+
+    background: white;
+}
+
+.hex_content {
+    position: absolute;
+
+    top: 2px;
+    left: 2px;
+
+    width: 130px;
+    height: 106px;
+}
+
+.hex_content .hex__image {
+    filter: invert(100%);
+
+    width: 60px;
+}
+
+.hex__image {
+    position: absolute;
+
+    top: 0; bottom: 0;
+    left: 0; right: 0;
+
+    margin: auto;
+}
+
+.hex__button {
+    cursor: pointer;
+
+    transition: 0.3s ease;
+}
+
+.hex__button img {
+    width: 90px;
+    -webkit-transform: translateZ(0);
+
+    transition: 0.3s ease;
+}
+
+.hex__button label {
+    position: absolute;
+
+    bottom: 10px;
+    left: 0;
+    right: 0;
+    margin: UTO;
+
+    width: 100%;
+    text-align: center;
+
+    opacity: 0;
+    color: #ffffff;
+
+    font: 14px/20px "Lato", Arial, sans-serif;
+    transition: 0.3s ease;
+    cursor: pointer;
+}
+
+.hex__button:hover, .hex__button.current {
+    background: #222222;
+}
+
+.hex__button:hover img,
+.hex__button.current img {
+    filter: invert(100%);
+    width: 70px;
+    bottom: 20px;
+}
+
+.hex__button:hover label,
+.hex__button.current label {
+    opacity: 1;
+}
+
+#hex-01, #hex-02, #hex-03,
+#hex-04, #hex-05, #hex-06,
+#hex-07, #hex-08, #hex-09,
+#hex-10, #hex-origin { top: 260px; left: 342px;}
+
+.close #hex-01 {
+    top: 260px; left: 342px;
+    animation: hex01rev 0.7s ease;
+}
+
+.open #hex-01 {
+    top: 0px; left: 114px;
+    animation: hex01 0.7s ease;
+}
+
+@keyframes hex01 {
+    0% { top: 260px; left: 342px; }
+    25% { top: 130px; left: 342px; }
+    50% { top: 65px; left: 228px; }
+    75%,
+    100% { top: 0px; left: 114px; }
+}
+
+@keyframes hex01rev {
+    0%,
+    25% { top: 0px; left: 114px; }
+    50% { top: 65px; left: 228px; }
+    75% { top: 130px; left: 342px; }
+    100% { top: 260px; left: 342px; }
+}
+
+.close #hex-02 {
+    top: 260px; left: 342px;
+    animation: hex02rev 0.7s ease;
+}
+
+.open #hex-02 {
+    top: 0px; left: -114px;
+    animation: hex02 0.7s ease;
+}
+
+@keyframes hex02 {
+    0% { top: 260px; left: 342px; }
+    25% { top: 195px; left: 228px; }
+    50% { top: 130px; left: 114px; }
+    75% { top: 65px; left: 0px; }
+    100% { top: 0px; left: -114px; }
+}
+
+@keyframes hex02rev {
+    0% { top: 0px; left: -114px; }
+    25% { top: 65px; left: 0px; }
+    50% { top: 130px; left: 114px; }
+    75% { top: 195px; left: 228px; }
+    100% { top: 260px; left: 342px; }
+}
+
+.close #hex-03 {
+    top: 260px; left: 342px;
+    animation: hex03rev 0.7s ease;
+}
+
+.open #hex-03 {
+    top: 130px; left: -114px;
+    animation: hex03 0.7s ease;
+}
+
+@keyframes hex03 {
+    0% { top: 260px; left: 342px; }
+    25% { top: 195px; left: 228px; }
+    50% { top: 260px; left: 114px; }
+    75% { top: 195px; left: 0px; }
+    100% { top: 130px; left: -114px; }
+}
+
+@keyframes hex03rev {
+    0% { top: 130px; left: -114px; }
+    25% { top: 195px; left: 0px; }
+    50% { top: 260px; left: 114px; }
+    75% { top: 195px; left: 228px; }
+    100% { top: 260px; left: 342px; }
+}
+
+.close #hex-04 {
+    top: 260px; left: 342px;
+    animation: hex04rev 0.7s ease;
+}
+
+.open #hex-04 {
+    top: 195px; left: 0px;
+    animation: hex04 0.7s ease;
+}
+
+@keyframes hex04 {
+    0% { top: 260px; left: 342px; }
+    25% { top: 195px; left: 228px; }
+    50% { top: 260px; left: 114px; }
+    75%,
+    100% { top: 195px; left: 0px; }
+}
+
+@keyframes hex04rev {
+    0%,
+    25% { top: 195px; left: 0px; }
+    50% { top: 260px; left: 114px; }
+    75% { top: 195px; left: 228px; }
+    100% { top: 260px; left: 342px; }
+}
+
+.close #hex-05 {
+    top: 260px; left: 342px;
+    animation: hex05rev 0.7s ease;
+}
+
+.open #hex-05 {
+    top: 260px; left: 114px;
+    animation: hex05 0.7s ease;
+}
+
+@keyframes hex05 {
+    0% { top: 260px; left: 342px; }
+    25% { top: 195px; left: 228px; }
+    50%,
+    75%,
+    100% { top: 260px; left: 114px; }
+}
+
+@keyframes hex05rev {
+    0%,
+    25%,
+    50% { top: 260px; left: 114px; }
+    75% { top: 195px; left: 228px; }
+    100% { top: 260px; left: 342px; }
+}
+
+.close #hex-06 {
+    top: 260px; left: 342px;
+    animation: hex06rev 0.7s ease;
+}
+
+.open #hex-06 {
+    top: 65px; left: 0;
+    animation: hex06 0.7s ease;
+}
+
+@keyframes hex06 {
+    0% { top: 260px; left: 342px; }
+    25% { top: 195px; left: 228px; }
+    50% { top: 130px; left: 114px; }
+    75%,
+    100% { top: 65px; left: 0px; }
+}
+
+@keyframes hex06rev {
+    0%,
+    25% { top: 65px; left: 0px; }
+    50% { top: 130px; left: 114px; }
+    75% { top: 195px; left: 228px; }
+    100% { top: 260px; left: 342px; }
+}
+
+.close #hex-07 {
+    top: 260px; left: 342px;
+    animation: hex07rev 0.7s ease;
+}
+
+.open #hex-07 {
+    top: 65px; left: 228px;
+    animation: hex07 0.7s ease;
+}
+
+@keyframes hex07 {
+    0% { top: 260px; left: 342px; }
+    25% { top: 130px; left: 342px; }
+    50%,
+    75%,
+    100% { top: 65px; left: 228px; }
+}
+
+@keyframes hex07rev {
+    0%,
+    25%,
+    50% { top: 65px; left: 228px; }
+    75% { top: 130px; left: 342px; }
+    100% { top: 260px; left: 342px; }
+}
+
+.close #hex-08 {
+    top: 260px; left: 342px;
+    animation: hex08rev 0.7s ease;
+}
+
+.open #hex-08 {
+    top: 130px; left: 114px;
+    animation: hex08 0.7s ease;
+}
+
+@keyframes hex08 {
+    0% { top: 260px; left: 342px; }
+    25% { top: 195px; left: 228px; }
+    50%,
+    75%,
+    100% { top: 130px; left: 114px; }
+}
+
+@keyframes hex08rev {
+    0%,
+    25%,
+    50% { top: 130px; left: 114px; }
+    75% { top: 195px; left: 228px; }
+    100% { top: 260px; left: 342px; }
+}
+
+.close #hex-09 {
+    top: 260px; left: 342px;
+    animation: hex09rev 0.7s ease;
+}
+
+.open #hex-09 {
+    top: 130px; left: 342px;
+    animation: hex09 0.7s ease;
+}
+
+@keyframes hex09 {
+    0% { top: 260px; left: 342px; }
+    25%,
+    50%,
+    75%,
+    100% { top: 130px; left: 342px; }
+}
+
+@keyframes hex09rev {
+    0%,
+    25%,
+    50%,
+    75% { top: 130px; left: 342px; }
+    100% { top: 260px; left: 342px; }
+}
+
+.close #hex-10 {
+    top: 260px; left: 342px;
+    animation: hex10rev 0.7s ease;
+}
+
+.open #hex-10 {
+    top: 195px; left: 228px;
+    animation: hex10 0.7s ease;
+}
+
+@keyframes hex10 {
+    0% { top: 260px; left: 342px; }
+    25%,
+    50%,
+    75%,
+    100% { top: 195px; left: 228px; }
+}
+
+@keyframes hex10rev {
+    0%,
+    25%,
+    50%,
+    75% { top: 195px; left: 228px; }
+    100% { top: 260px; left: 342px; }
+}
+
+#menu_overlay {
+    background: rgba(0, 0, 0, 0.7);
+    position: fixed;
+
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+
+    cursor: pointer;
+    z-index: 1;
+
+    transition: 0.7s;
+}
+
+#menu_overlay.close {
+    visibility: hidden;
+    background: rgba(0, 0, 0, 0.0);
+}
+
+.alert {
+    background: #222;
+    padding: 8px;
+    border-radius: 5px;
+    position: absolute;
+    bottom: 10px;
+    height: 35px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+    color: white;
+    width: 85%;
+}

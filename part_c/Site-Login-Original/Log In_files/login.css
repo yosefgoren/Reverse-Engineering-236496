@@ -1,0 +1,293 @@
+#window {
+    width: 1000px;
+    height: 100%;
+    overflow: hidden;
+
+    position: absolute;
+    left: 0; right: 0;
+    margin: auto;
+}
+
+#slots {
+    width: 1500px;
+    height: 100%;
+
+    margin-left: -500px;
+    transition: 1.0s ease;
+}
+
+.slot_container {
+    height: 100%;
+    width: 33%;
+
+    float: left;
+    position: relative;
+}
+
+#hoodie {
+    height: 500px;
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 300px;
+    margin: auto;
+}
+
+#polygon_border {
+    display: inline-block;
+    position: absolute;
+
+    top: 0px;
+    bottom: 0px;
+    right: 0px;
+    left: 0px;
+    margin: auto;
+
+    width: 400px;
+    height: 500px;
+
+    background: #ffffff;
+    box-sizing: border-box;
+    box-shadow: 25px 50px 30px #2d2d2d inset;
+
+    -webkit-clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+}
+
+#crop {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+
+    width: 380px; /* container height - (border thickness * 2) */
+    height: 480px; /* container height - (border thickness * 2) */
+
+    overflow: hidden;
+    background-color: #E3E3E3;
+
+    -webkit-clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+
+}
+
+#main_img {
+    height: 672px;
+    width: 1200px;
+    margin: -10px -270px;
+}
+
+form {
+    display: inline-block;
+    position: absolute;
+
+    top: 0px;
+    bottom: 0px;
+    left: 25px;
+    margin: auto;
+
+    width: 400px;
+    height: 550px;
+    padding: 16px;
+}
+
+form div {
+    margin: 30px 0px 0px 0px;
+}
+
+@import url('https://fonts.googleapis.com/css?family=Damion|Muli:400,600');
+
+form #title {
+    font: 24px 'Lato', sans-serif;
+    text-align: center;
+    width: 100%;
+}
+
+@import url('https://fonts.googleapis.com/css?family=Arvo:700');
+@import url('https://fonts.googleapis.com/css?family=Seaweed+Script');
+
+.plate {
+  width: 100%;
+  margin: 10% auto;
+}
+
+.shadow {
+  color: #e09d04;
+  font-family: Arvo;
+  font-weight: bold;
+  text-shadow:
+    -2px -2px 0 #222,
+    2px -2px 0 #222,
+    -2px 2px 0 #222,
+    2px 2px 0 #222,
+    4px 4px 0 #222,
+    5px 5px 0 #222,
+    6px 6px 0 #222,
+    7px 7px 0 #222;
+  line-height: 0.8em;
+  letter-spacing: 0.1em;
+  transform: scaleY(0.7);
+  -webkit-transform: scaleY(0.7);
+  -moz-transform: scaleY(0.7);
+  margin:0;
+  text-align: center;
+}
+
+.script {
+  font-family: "Seaweed Script";
+  color: #222;
+  text-align: center;
+  font-size: 40px;
+  position: relative;
+  margin:0;
+}
+
+.script:before {
+  content:"";
+  display: block;
+  position: absolute;
+  z-index:-1;
+  top: 50%;
+  width: 40%;
+  left: 0;
+  border-bottom: 3px solid #222;
+}
+
+.script:after {
+  content:"";
+  display: block;
+  position: absolute;
+  z-index:-1;
+  top: 50%;
+  width: 40%;
+  right: 0;
+  border-bottom: 3px solid #222;
+}
+
+.text2 {
+  font-size: 80px;
+}
+
+.text1 {
+  font-size: 100px;
+}
+
+.inputfile {
+    width: 0.1px;
+    height: 0.1px;
+    opacity: 0;
+    overflow: hidden;
+    position: absolute;
+    z-index: -1;
+}
+
+.inputfile + label {
+    width: 240px;
+    font: 14px/20px "Lato", Arial, sans-serif;
+    font-size: 16px;
+    /* 20px */
+    font-weight: 700;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    cursor: pointer;
+    display: inline-block;
+    overflow: hidden;
+    padding: 15px;
+    text-align: center;
+    /* 10px 20px */
+}
+
+.no-js .inputfile + label {
+    display: none;
+}
+
+.inputfile:focus + label,
+.inputfile.has-focus + label {
+    outline: 1px dotted #000;
+    outline: -webkit-focus-ring-color auto 5px;
+}
+
+.inputfile + label * {
+    /* pointer-events: none; */
+    /* in case of FastClick lib use */
+}
+
+.inputfile + label svg {
+    width: 1em;
+    height: 1em;
+    vertical-align: middle;
+    fill: currentColor;
+    margin-top: -0.25em;
+    /* 4px */
+    margin-right: 0.25em;
+    /* 4px */
+}
+
+#solution_upload {
+    background: white;
+    border-radius: 10px;
+
+    position: absolute;
+
+    top: 650px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    margin: auto;
+
+    height: 50px;
+    width: 400px;
+
+    transition: 0.8s ease;
+    opacity: 0;
+    padding: 0;
+}
+
+#cancel {
+    background: #fc0933;
+    color: white;
+    border-top-left-radius: 10px;
+    border-bottom-left-radius: 10px;
+    float: left;
+
+    font: 14px/20px "Lato", Arial, sans-serif;
+    text-align: center;
+    font-size: 16px;
+    padding: 15px;
+
+    height: 100%;
+    width: 80px;
+    cursor: pointer;
+    margin: 0;
+}
+
+#submit {
+    background: #1d5a17;
+    color: white;
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
+    float: right;
+
+    font: 14px/20px "Lato", Arial, sans-serif;
+    text-align: center;
+    font-size: 16px;
+    padding: 15px;
+
+    height: 100%;
+    width: 80px;
+    cursor: pointer;
+    margin: 0;
+}
+
+.alert {
+    width: 92% !important;
+    text-align: center;
+}
+
+.challenge_alert {
+    width: 80% !important;
+    right: 0;
+    left: 0;
+    margin: auto;
+    bottom: 60px;
+    text-align: center;
+}
