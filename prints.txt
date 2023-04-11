@@ -1,0 +1,69 @@
+############################tomer print:
+
+LCTOMER:
+	.ascii "the random is : %d\n\0"
+push ecx
+push edx
+push eax
+push 1574
+mov	DWORD PTR [esp], OFFSET FLAT:LCTOMER
+call _printf
+pop eax
+pop eax
+pop edx
+pop ecx
+
+############################yoesf print
+
+printi_s:
+	.ascii "%d\n\0"
+printi:
+	push ebp
+	mov ebp, esp
+	push eax
+	push ebx
+	push ecx
+	push edx
+	push edi
+	push esi
+	
+	sub esp , 8
+	mov	DWORD PTR [esp+4], eax
+	mov	DWORD PTR [esp], OFFSET FLAT:printi_s
+	call _printf
+	nop
+	add esp , 8
+
+	pop esi
+	pop edi
+	pop edx
+	pop ecx
+	pop ebx
+	pop eax
+	pop ebp
+	ret
+
+printbrk_s:
+	.ascii "==========================\n\0"
+printbrk:
+	push ebp
+	mov ebp, esp
+	push eax
+	push ebx
+	push ecx
+	push edx
+	push edi
+	push esi
+	
+	mov	DWORD PTR [esp], OFFSET FLAT:printbrk_s
+	call _printf
+	nop
+
+	pop esi
+	pop edi
+	pop edx
+	pop ecx
+	pop ebx
+	pop eax
+	pop ebp
+	ret

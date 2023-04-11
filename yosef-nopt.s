@@ -18,7 +18,62 @@ LC5:
 	.text
 	.globl	_main
 	.def	_main;	.scl	2;	.type	32;	.endef
+
+printi_s:
+	.ascii "%d\n\0"
+printi:
+	push ebp
+	mov ebp, esp
+	push eax
+	push ebx
+	push ecx
+	push edx
+	push edi
+	push esi
+	
+	sub esp , 8
+	mov	DWORD PTR [esp+4], eax
+	mov	DWORD PTR [esp], OFFSET FLAT:printi_s
+	call _printf
+	nop
+	add esp , 8
+
+	pop esi
+	pop edi
+	pop edx
+	pop ecx
+	pop ebx
+	pop eax
+	pop ebp
+	ret
+
+printbrk_s:
+	.ascii "==========================\n\0"
+printbrk:
+	push ebp
+	mov ebp, esp
+	push eax
+	push ebx
+	push ecx
+	push edx
+	push edi
+	push esi
+	
+	mov	DWORD PTR [esp], OFFSET FLAT:printbrk_s
+	call _printf
+	nop
+
+	pop esi
+	pop edi
+	pop edx
+	pop ecx
+	pop ebx
+	pop eax
+	pop ebp
+	ret
+
 _main:
+	;push	ebp
 	push	ebp
 	mov	ebp, esp
 	sub	esp, 16
@@ -27,7 +82,8 @@ _main:
 	call	_time
 	mov	DWORD PTR [esp], eax
 	call	_srand
-	call	_rand
+	call	_rand	
+	
 	mov	ecx, eax
 	mov	edx, 1374389535
 	mov	eax, ecx
@@ -41,7 +97,7 @@ _main:
 	sub	ecx, eax
 	mov	eax, ecx
 	add	eax, 1
-
+	call printi
 	mov	DWORD PTR [ebp-4], eax
 	mov	DWORD PTR [ebp-8], -1
 	mov	DWORD PTR [esp], OFFSET FLAT:LC0
@@ -49,9 +105,9 @@ _main:
 L6:
 	mov	DWORD PTR [esp], OFFSET FLAT:LC1
 	call	_printf
-	lea	esi, [ebp-8]
-	mov	DWORD PTR [esp+4], esi
 	mov	DWORD PTR [esp], OFFSET FLAT:LC2
+	lea	eax, [ebp-8]
+	mov	DWORD PTR [esp+4], eax
 	call	_scanf
 	mov	eax, DWORD PTR [ebp-8]
 	cmp	eax, DWORD PTR [ebp-4]
@@ -69,7 +125,6 @@ L2:
 L4:
 	mov	DWORD PTR [esp], OFFSET FLAT:LC5
 	call	_puts
-L3:
 L8:
 	mov	eax, 0
 	leave
