@@ -1,0 +1,155 @@
+@import url(https://fonts.googleapis.com/css?family=Lato:400,700,900);
+
+body {
+  font: 14px/20px "Lato", Arial, sans-serif;
+}
+
+*, *:before, *:after {
+  box-sizing: border-box;
+}
+
+.wrapper {
+  position: absolute;
+
+  left: 0; right: 0;
+  top: 0; bottom: 0;
+
+  margin: auto;
+
+  height: 650px;
+  width: 300px;
+
+  padding-top: 40px;
+  padding-bottom: 40px;
+  outline: none;
+}
+
+.card {
+  background: white;
+  width: 300px;
+  display: inline-block;
+  margin: auto;
+  border-radius: 20px;
+  position: relative;
+  text-align: center;
+  box-shadow: -1px 15px 30px -12px black;
+  z-index: 9999;
+}
+
+.card__image {
+  position: relative;
+  height: 230px;
+  margin-bottom: 35px;
+  border-top-left-radius: 15px;
+  border-top-right-radius: 15px;
+}
+
+.card__image {
+  background: url('../res/barbarian-bg.jpg');
+}
+
+.card__image img {
+  width: 400px;
+  position: absolute;
+  top: -65px;
+  left: -70px;
+}
+
+.card__level {
+  text-transform: uppercase;
+  font-size: 12px;
+  font-weight: 700;
+  margin-bottom: 3px;
+  color: #82BB30;
+}
+
+.card__unit-name {
+  font-size: 26px;
+  color: black;
+  font-weight: 900;
+  margin-bottom: 5px;
+}
+
+.card__unit-description {
+  padding: 20px;
+  padding-bottom: 10px;
+}
+
+.card__unit-stats {
+  color: white;
+
+  font-weight: 700;
+  border-bottom-left-radius: 15px;
+  border-bottom-right-radius: 15px;
+  padding-top: 23px;
+  overflow:hidden;
+}
+
+.one-sixth {
+  width: 20%;
+  float: left;
+  padding: 30px 5px 10px;
+  border-right: 1px solid #36a0ff;
+
+  position: relative;
+}
+
+.stat {
+  width: 100%;
+  position: relative;
+  font-size: 24px;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.stat-value {
+  width: 100%;
+  text-align: center;
+  text-transform: uppercase;
+  font-weight: 400;
+  font-size: 12px;
+}
+
+.clearfix:after {
+	visibility: hidden;
+	display: block;
+	font-size: 0;
+	content: " ";
+	clear: both;
+	height: 0;
+}
+
+.resource_outline {
+    position: absolute;
+    right: 0;
+    left: 0;
+    top: -23px;
+    margin: auto;
+
+    height: 49px;
+    width: 44px;
+
+    background: white;
+    -webkit-clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+}
+
+.resource_crop {
+    position: absolute;
+    top: 4px;
+    left: 4px;
+
+    height: 41px;
+    width: 36px;
+    overflow:hidden;
+
+    -webkit-clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+}
+
+.resource_img {
+    margin: 6px 3px;
+    height: 25px;
+
+    filter: invert(100%);
+}
