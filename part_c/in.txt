@@ -2,4 +2,3 @@ road
 road
 city
 development
-settlement

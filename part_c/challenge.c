@@ -1,15 +1,16 @@
 #include <stdio.h>
-int compare(const char* a, const char* b){
-    int i=0;
-    while(a[i] && b[i]){
-        if(a[i] != b[i]){
-            return 0;
-        }
-        i++;
-    }
-    return !a[i] && !b[i];
-    return 0;
-}
+#include <string.h>
+// int compare(const char* a, const char* b){
+//     int i=0;
+//     while(a[i] && b[i]){
+//         if(a[i] != b[i]){
+//             return 0;
+//         }
+//         i++;
+//     }
+//     return !a[i] && !b[i];
+//     return 0;
+// }
 
 int main(){
     int wood = 0;
@@ -20,21 +21,21 @@ int main(){
     char line[200];
 
     while (fgets(line, sizeof(line)-1, stdin)){
-        if (compare(line, "road\n")){
+        if (strcmp(line, "road\n")==0){
             wood++;
             brick++;
         }
-        else if (compare(line,"settlement\n")){
+        if (strcmp(line,"settlement\n")==0){
             wood++;
             brick++;
             wool++;
             grain++;
         }
-        else if (compare(line,"city\n")){
+        if (strcmp(line,"city\n")==0){
             grain += 2;
             ore += 3;
         }
-        else if (compare(line,"development\n")){
+        if (strcmp(line,"development\n")==0){
             grain++;
             ore++;
             wool++;
