@@ -21,21 +21,21 @@ int main(){
     char line[200];
 
     while (fgets(line, sizeof(line)-1, stdin)){
-        if (strcmp(line, "road\n")==0){
+        if (strcmp(line, "road\n")==0 || strcmp(line, "road")==0){
             wood++;
             brick++;
         }
-        if (strcmp(line,"settlement\n")==0){
+        if (strcmp(line,"settlement\n")==0 || strcmp(line,"settlement")==0){
             wood++;
             brick++;
             wool++;
             grain++;
         }
-        if (strcmp(line,"city\n")==0){
+        if (strcmp(line,"city\n")==0 || strcmp(line,"city")==0){
             grain += 2;
             ore += 3;
         }
-        if (strcmp(line,"development\n")==0){
+        if (strcmp(line,"development\n")==0 || strcmp(line,"development")==0){
             grain++;
             ore++;
             wool++;
