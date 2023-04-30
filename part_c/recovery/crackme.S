@@ -122,7 +122,7 @@ L5:
 	.section .rdata,"dr"
 	.align 4
 LC7:
-	.ascii "select username, password from users where username='\0"
+	.ascii "select username, password from users where username='\0" #'
 LC8:
 	.ascii "users.db\0"
 	.align 4
@@ -574,3 +574,11 @@ _main:
 	.def	_scanf;	.scl	2;	.type	32;	.endef
 	.def	_signal;	.scl	2;	.type	32;	.endef
 	.def	_atoi;	.scl	2;	.type	32;	.endef
+_sqlite3_errmsg:
+	ret
+_sqlite3_open:
+	ret
+_sqlite3_exec:
+	ret
+_sqlite3_close:
+	ret
