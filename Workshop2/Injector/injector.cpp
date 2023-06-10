@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <tlhelp32.h>
 #include <Shlwapi.h>
+#include <string>
 
 LPSTR DLL_PATH;
 //#define DLL_PATH "ColorDll.dll"
@@ -27,12 +28,22 @@ int main(int argc, char** argv)
         return 1;
     }
 
-    LPSTR lpCmdLine = (LPSTR)argv[1];
+    LPSTR lpAppName = (LPSTR)argv[1];
     DLL_PATH = (LPSTR)argv[2];
 
-    printf("opening process %s\n", lpCmdLine);
-    if (CreateProcessA(lpCmdLine, NULL, NULL, NULL, NULL, CREATE_SUSPENDED, NULL, NULL, &Startup, &pi) == FALSE) {
-        printf("couldnt open process %s\n", lpCmdLine);
+    const char* lpCmdLine = NULL;
+    if (argc >= 4) {
+        std::string args;
+        for (int i = 3; i < argc; ++i) {
+            args += (LPSTR)argv[i];
+            args += " ";
+        }
+        lpCmdLine = args.c_str();
+    }
+
+    printf("opening process %s\n", lpAppName);
+    if (CreateProcessA(lpAppName, (LPSTR)lpCmdLine, NULL, NULL, TRUE, CREATE_SUSPENDED, NULL, NULL, &Startup, &pi) == FALSE) {
+        printf("couldnt open process %s\n", lpAppName);
         return 1;
     }
 
@@ -72,3 +83,40 @@ BOOL dllInjector(const char* dllpath, DWORD pID)
 
     return true;
 }
+
+
+
+// int main(int argc, char** argv)
+// {
+
+//     // Create Process SUSPENDED
+//     PROCESS_INFORMATION pi;
+//     STARTUPINFOA Startup;
+//     ZeroMemory(&Startup, sizeof(Startup));
+//     ZeroMemory(&pi, sizeof(pi));
+//     // get the command line argument of the current process
+//     //LPSTR lpCmdLine = GetCommandLineA();
+//     if (argc < 3) {
+//         printf("Usage: %s prog_name dll_name\n", argv[0]);
+//         return 1;
+//     }
+
+//     LPSTR lpCmdLine = (LPSTR)argv[1];
+//     DLL_PATH = (LPSTR)argv[2];
+
+//     printf("opening process %s\n", lpCmdLine);
+//     if (CreateProcessA(lpCmdLine, NULL, NULL, NULL, NULL, CREATE_SUSPENDED, NULL, NULL, &Startup, &pi) == FALSE) {
+//         printf("couldnt open process %s\n", lpCmdLine);
+//         return 1;
+//     }
+
+//     if (!(dllInjector(DLL_PATH, pi.dwProcessId))) {
+//         printf("couldnt inject dll");
+//         return 1;
+//     }
+
+//     Sleep(1000); // Let the DLL finish loading
+//     ResumeThread(pi.hThread);
+//     printf("Injected dll successfully\n");
+//     return 0;
+// }
