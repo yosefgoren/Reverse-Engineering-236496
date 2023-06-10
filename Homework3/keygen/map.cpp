@@ -107,8 +107,8 @@ map<uint8_t, uint8_t> rev_map = {
 template <size_t ArrSize>
 int count_occur(uint8_t value, const array<pair<uint8_t, uint8_t>, ArrSize>& arr){
 	int count = 0;
-	for(auto& [in, out] : arr){
-		if(in == value){
+	for(auto& in_out : arr){
+		if(in_out.first == value){
 			count++;
 		}
 	}
