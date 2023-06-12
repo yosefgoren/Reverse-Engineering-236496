@@ -150,7 +150,7 @@ class cipherParser():
 def get_token_list(cipher: str)->list:
     return [token for token in cipherParser(cipher)]
 
-def decrypt(cipher: str)->str:
+def table_decrypt(cipher: str)->str:
     table = get_dec_table()
     plaintext = ""
     for token in cipherParser(cipher):
@@ -159,10 +159,53 @@ def decrypt(cipher: str)->str:
         plaintext += pt_word
     return plaintext
 
-
 def get_overloaded_values()->list:
     table = get_dec_table()
     return [(k, v) for k, v in table.items() if len(v) > 1]
+
+class newParser():
+    def parse_cipher(cipher: str):
+        if len(cipher) == 0:
+            raise StopIteration
+        if len(cipher) >= 3 and (cipher[1] == "+" or cipher[1] == "-"):
+            return cipher[:3], cipher[3:]
+        else:
+            return cipher[:1], cipher[1:]
+    
+    def __init__(self, cipher: str):
+        self.remaining = cipher
+
+    def __next__(self)->str:
+        """
+        splits the remaining cipher into (token, rest) where token is the first atom to decode,
+            and rest is the remaining cipher.
+        Returns 'token'
+        """
+        res, self.remaining = newParser.parse_cipher(self.remaining)
+        return res
+    
+    def __iter__(self):
+        return self
+
+def manual_decrypt(s: str):
+    token_letter_rules = {
+        'A': 0x1,
+        'J': 0xA,
+        'Q': 0xB,
+        'K': 0xC
+    }
+    nibles = []
+    for token in newParser(s):
+        if token in token_letter_rules:
+            nibles.append(token_letter_rules[token])
+        else:
+            if len(token) == 3:
+                nibles.append(int(eval_addition(token)))
+            else:
+                nibles.append(ord(token)-48)
+    byte_list = [(nibles[i], nibles[i+1]) for i in range(0, len(nibles), 2)]
+    byte_list = [((left << 4) | right) for left, right in byte_list]
+    return "".join([chr(byte) for byte in byte_list])
 
 # ******************************************************************************************
 #  *  *  *  *  *  *  *  *  *  *  *  *  Experiments  *  *  *  *  *  *  *  *  *  *  *  *  *  *
@@ -188,21 +231,22 @@ if __name__ == "__main__":
 
     # reset_decs()
     # update_decs_from_encs()
-    
-    mixed_sets = [items[1] for items in get_overloaded_values()]
-    if(len(mixed_sets) > 0):
-        print("I some text where some letters were swapped.")
-        print("Could you help me un-swap it so it makes sense?")
-        first_set = mixed_sets[0]
-        print(f"The mixed sets letters are: {mixed_sets}")
-        print(f"for example, if there is a mixed set: \"{first_set}\", the letter \"{first_set[0]}\" -it could actually be \"{first_set[1]}\"")
-    else:
-        print("No overloading...")
 
-    print("The scrambled text is:")
-    print("\"")
+    
+    # mixed_sets = [items[1] for items in get_overloaded_values()]
+    # if(len(mixed_sets) > 0):
+    #     print("I some text where some letters were swapped.")
+    #     print("Could you help me un-swap it so it makes sense?")
+    #     first_set = mixed_sets[0]
+    #     print(f"The mixed sets letters are: {mixed_sets}")
+    #     print(f"for example, if there is a mixed set: \"{first_set}\", the letter \"{first_set[0]}\" -it could actually be \"{first_set[1]}\"")
+    # else:
+    #     print("No overloading...")
+
+    # print("The scrambled text is:")
+    # print("\"")
     for cipher in ciphers:
-        print(decrypt(cipher))
-    print("\"")
-    print("notes: - do not change letters outside the mixed sets")
-    print("       - be concise and only output the un-swapped text")
+        print(manual_decrypt(cipher))
+    # print("\"")
+    # print("notes: - do not change letters outside the mixed sets")
+    # print("       - be concise and only output the un-swapped text")
