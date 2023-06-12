@@ -1,0 +1,16 @@
+<left><right><left><right>...
+
+'x-x':
+	0x0
+'A':
+	0x1
+'J':
+	0xA
+'Q':
+	0xB
+'K':
+	0xC
+'x+y':
+	<x+y>
+'x' (else):
+	<x-48>

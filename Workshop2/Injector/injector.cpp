@@ -31,15 +31,17 @@ int main(int argc, char** argv)
     LPSTR lpAppName = (LPSTR)argv[1];
     DLL_PATH = (LPSTR)argv[2];
 
-    const char* lpCmdLine = NULL;
+    std::string args = std::string(lpAppName) + " ";
     if (argc >= 4) {
-        std::string args;
+        
         for (int i = 3; i < argc; ++i) {
             args += (LPSTR)argv[i];
             args += " ";
         }
-        lpCmdLine = args.c_str();
+        
+        
     }
+    const char* lpCmdLine = args.c_str();
 
     printf("opening process %s\n", lpAppName);
     if (CreateProcessA(lpAppName, (LPSTR)lpCmdLine, NULL, NULL, TRUE, CREATE_SUSPENDED, NULL, NULL, &Startup, &pi) == FALSE) {
