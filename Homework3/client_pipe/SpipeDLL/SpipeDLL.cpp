@@ -11,6 +11,10 @@
 #include <algorithm>
 #include <map>
 #include <string>
+#include <set>
+#include <string>
+#include <vector>
+#include <sstream>
 
 #include "dec.cpp"
 
@@ -24,20 +28,29 @@ ofstream log_file("log-sol.txt");
 // change this to the proper signature of the hook
 typedef int(*HOOK_TYPE)(const char*);
 
-HOOK_TYPE orig_srand;
-
-#include <set>
-
+HOOK_TYPE orig_tgt;
 
 
 int doHook(const char* str) {
     if (std::set<char>({'W', '[', 'y'}).count(str[0]) == 0){
-        log_file << "doHook: " << str << std::endl;
-        std::string decd = manualDecrypt(str);
-        log_file << "decrypted: " << decd << std::endl;
-        return orig_srand(decd.c_str());
+        std::stringstream test(str);
+        std::vector<std::string> seglist;
+        std::string output = "";
+        std::string segment;
+        while (std::getline(test, segment, '\n'))
+        {
+            if (segment.size() > 0 && segment[segment.size() - 1] == 0x0d) {// '\r'
+                segment = segment.substr(0, segment.size() - 1);//remove last
+            }
+            if (segment.size() < 1) {
+                output += "\n";
+                continue;
+            }
+            output += manualDecrypt(segment) + "\n";
+        }
+        return orig_tgt(output.c_str());
     }
-    return orig_srand(str);
+    return orig_tgt(str);
 }
 
 
@@ -59,14 +72,14 @@ void setHook() {
         return;
     }
    
-    orig_srand = (HOOK_TYPE) GetProcAddress(target_dll, "puts");
-    if (orig_srand == NULL) {
+    orig_tgt = (HOOK_TYPE) GetProcAddress(target_dll, "puts");
+    if (orig_tgt == NULL) {
         log_file << "couldnt find function" << endl;
         return;
     };
     IAT_ADDRESS = (LPDWORD)(curr_prog + IAT_Func_Offset / 4);
     printf("overwriting IAT address: 0x%08x\n", IAT_ADDRESS);
-    if ((*IAT_ADDRESS) != (DWORD)orig_srand) {
+    if ((*IAT_ADDRESS) != (DWORD)orig_tgt) {
         log_file << "IAT contents does not match - maybe check the offset again" << endl;
         return;
     }

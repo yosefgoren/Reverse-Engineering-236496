@@ -5,9 +5,6 @@
 #include <string>
 
 LPSTR DLL_PATH;
-#define true 1
-#define false 0
-
 
 BOOL dllInjector(const char* dllpath, DWORD pID);
 
@@ -18,23 +15,13 @@ int main(int argc, char** argv)
     STARTUPINFOA Startup;
     ZeroMemory(&Startup, sizeof(Startup));
     ZeroMemory(&pi, sizeof(pi));
-    if (argc < 3) {
-        printf("Usage: %s prog_name dll_name\n", argv[0]);
-        return 1;
-    }
-
-    LPSTR lpAppName = (LPSTR)argv[1];
-    DLL_PATH = (LPSTR)argv[2];
+    std::string lpAppName = "client.exe";
+    DLL_PATH = (LPSTR)"SpipeDLL.dll";
     std::string args = std::string(lpAppName) + " ";
-    if (argc >= 4) {
-        for (int i = 3; i < argc; ++i) {
-            args += (LPSTR)argv[i];
-            args += " ";
-        }
-    }
+    const char* lpCmdLine = "client.exe DMSG";
 
-    if (CreateProcessA((LPSTR)lpAppName, (LPSTR)(args.c_str()), NULL, NULL, FALSE, CREATE_SUSPENDED, NULL, NULL, &Startup, &pi) == FALSE) {
-        printf("couldnt open process %s\n", lpAppName);
+    if (CreateProcessA((LPSTR)lpAppName.c_str(), (LPSTR)lpCmdLine, NULL, NULL, FALSE, CREATE_SUSPENDED, NULL, NULL, &Startup, &pi) == FALSE) {
+        printf("couldnt open process %s\n", lpAppName.c_str());
         return 1;
     }
 
