@@ -1,0 +1,102 @@
+\documentclass{article}
+% basics
+\usepackage{amsfonts}
+\usepackage{enumitem}
+\usepackage{float}
+\usepackage{graphicx}
+\usepackage{hyperref} 
+\usepackage[labelfont=bf]{caption}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}{Corollary}[theorem]
+
+% unique math expressions:  
+\usepackage{amsmath}
+\DeclareMathOperator*{\andloop}{\wedge}
+\DeclareMathOperator*{\pr}{Pr}
+\DeclareMathOperator*{\approach}{\longrightarrow}
+\DeclareMathOperator*{\eq}{=}
+
+% grey paper
+\usepackage{xcolor}
+% \pagecolor[rgb]{0.11,0.11,0.11}
+% \color{white}
+
+% embedded code sections
+\usepackage{listings}
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\lstdefinestyle{mystyle}{
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+
+\lstset{style=mystyle}
+
+\begin{document}
+\author{Yosef Goren \& Tomer Bitan}
+\title{Reverse Engineering - Homework 4}
+\section{}
+Skipped\dots
+\section{}
+With each of the users we know of:
+\begin{itemize}
+    \item wizard | ME7WS9H9UXV9DND4
+    \item goblin | 34U97VEYPNODNGZS
+    \item giant | QVN4ZXKH38PGDGS2
+    \item archer | FKGXJP0OCE1LKT3D
+\end{itemize}
+we have attempted to login using their credentials.\\
+For all of the users we have got something like:
+\begin{lstlisting}
+> hw4_client.exe
+Enter username: goblin
+Enter password: 34U97VEYPNODNGZS
+Welcome goblin
+
+What would you like to do?
+[1] ECHO - ping the server with a custom message, receive the same.
+[2] TIME - Get local time from server point of view.
+[3] 2020 - Get a a new year greeting.
+[4] USER - Show details of registered users.
+[5] DMSG - Download message from the server.
+\end{lstlisting}
+Accept for the archer were we got:
+\begin{lstlisting}
+> hw4_client.exe
+Enter username: archer
+Enter password: FKGXJP0OCE1LKT3D
+Welcome archer (Admin)
+
+What would you like to do?
+[1] ECHO - ping the server with a custom message, receive the same.
+[2] TIME - Get local time from server point of view.
+[3] 2020 - Get a a new year greeting.
+[4] USER - Show details of registered users.
+[5] DMSG - Download message from the server.
+[6] PEEK - peek into the system.
+[7] LOAD - Load the content of the last peeked file.
+\end{lstlisting}
+Note that not only does the welcome message mention that this user is an admin
+- but there are also additional options offered to him. This meant that this 
+user must have elevated permissions.\\
+The \texttt{users.py} script connects to 'archer' and prints the list of users.
+
+\maketitle
+
+\end{document}
