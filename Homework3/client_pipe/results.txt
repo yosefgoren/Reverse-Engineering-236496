@@ -1,0 +1,10 @@
+I took the robber captive. He is held in B2.
+
+
+If for some reason we should free the guy,
+
+
+one must find a code associated with the ROBBER_CAPTURED event.
+
+
+When this code is used, rolling the dice should result with cubes that sum to seven.

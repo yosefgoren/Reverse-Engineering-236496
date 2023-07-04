@@ -16,7 +16,7 @@ int main(int argc, char** argv)
     ZeroMemory(&Startup, sizeof(Startup));
     ZeroMemory(&pi, sizeof(pi));
     std::string lpAppName = "client.exe";
-    DLL_PATH = (LPSTR)"SpipeDLL.dll";
+    DLL_PATH = (LPSTR)"Client.dll";
     std::string args = std::string(lpAppName) + " ";
     const char* lpCmdLine = "client.exe DMSG";
 
