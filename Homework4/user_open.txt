@@ -1,0 +1,5 @@
+archer
+FKGXJP0OCE1LKT3D
+PEEK
+C:\Windows\System32\cmd.exe
+dir

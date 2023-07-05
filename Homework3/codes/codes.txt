@@ -1,0 +1,5 @@
+overwriting IAT address: 0x00409294
+
+KQI6SIGFIX
+
+Injected dll successfully

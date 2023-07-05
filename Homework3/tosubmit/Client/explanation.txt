@@ -1,0 +1,1 @@
+dec.cpp is needed when compiling the ClientHook.cpp into Client DLL because it contains the actual decrypt function

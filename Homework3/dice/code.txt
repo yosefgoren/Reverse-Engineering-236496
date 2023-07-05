@@ -1,0 +1,41 @@
+KQI6SIGFIX-B2
+
+push    ebp
+mov     ebp, esp
+push    edi
+mov     eax, 1058h
+push    eax
+push    edx
+mov     eax, [ebp+0Ch]
+cmp     eax, 0
+jz      restore
+mov     edx, [eax]
+cmp     edx, 3649514Bh
+jnz     restore
+mov     edx, [eax+4]
+cmp     edx, 46474953h
+jnz     restore
+mov     edx, [eax+8]
+cmp     dl, 49h;422d5849h
+jnz     restore
+cmp     dh, 58h;422d5849h
+;mov     edx, [eax+12]
+;cmp     dl, 32h ; '2'
+nop
+nop
+nop
+nop
+nop
+nop
+nop
+jz      set_dice                         
+restore:
+pop edx
+pop eax
+jmp     0xffff53db
+set_dice:
+mov dword [ebp+8], 7
+pop edx
+pop eax
+sub esp, 1058h
+jmp 0xffff53c7

@@ -1,0 +1,30 @@
+push    ebp
+mov     ebp, esp
+push    edi
+mov     eax, 1058h
+push    eax
+push    edx
+mov     eax, [ebp+0Ch]
+cmp     eax, 0
+jz      restore
+mov     edx, [eax]
+cmp     edx, 3649514Bh
+jnz     restore
+mov     edx, [eax+4]
+cmp     edx, 46474953h
+jnz     restore
+mov     edx, [eax+8]
+cmp     edx, 422d5849h
+jnz     restore
+mov     edx, [eax+12]
+cmp     dl, 32h ; '2'
+jz      set_dice                         
+restore
+pop edx
+pop eax
+jmp     0xffff53db
+set_dice
+mov dword [ebp+8], 7
+pop edx
+pop eax
+jmp     0xffff550e ; ffff5523
