@@ -2,6 +2,15 @@ from sys import argv
 import subprocess
 import shellcode
 
+def get_input_or_exit_on_eof():
+	"""
+	gets input from user, if EOF is reached, exits.
+	"""
+	try:
+		return input()
+	except EOFError:
+		exit(0)
+
 def run_exe_with_initial_input(input_file, exe_file):
 	# Run the executable on the input file
 	process = subprocess.Popen([exe_file], stdin=subprocess.PIPE, shell=True)
@@ -10,8 +19,7 @@ def run_exe_with_initial_input(input_file, exe_file):
 	file_input_lines = [s for s in filein.split(b'\n')]
 	with open("run_on_input_log.txt", 'w') as f:
 		while True:
-			next_input = input().encode('ascii') if len(file_input_lines) == 0 else file_input_lines.pop(0)
-			# next_input = input()
+			next_input = get_input_or_exit_on_eof().encode('ascii') if len(file_input_lines) == 0 else file_input_lines.pop(0)
 			next_input = bytes(next_input)+b"\n"
 			# Pass the user input to the executable
 			print(f"next_input: {next_input}", file=f)
@@ -31,6 +39,6 @@ if __name__ == "__main__":
 			input_filename = arg
 		elif arg.endswith(".exe"):
 			exec_filename = arg
-	shellcode.hw4_p3_filegen(input_filename, "shellcode.S")
 	
+	shellcode.hw4_p3_filegen(input_filename, "shellcode.S")
 	run_exe_with_initial_input(input_filename, exec_filename)

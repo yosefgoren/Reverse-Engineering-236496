@@ -104,9 +104,6 @@ def hw4_p3_filegen(output_filename, asm_input_filename):
 	gen.append_dword(0x62502028)
 	gen.append_asmline("jmp -330")
 	gen.append_strline("")
-	
-	gen.append_strline("*")
-	gen.append_strline("database")
 
 	gen.write_to_file(output_filename)
 
