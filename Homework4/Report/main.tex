@@ -51,6 +51,8 @@
 \begin{document}
 \author{Yosef Goren \& Tomer Bitan}
 \title{Reverse Engineering - Homework 4}
+\maketitle
+
 \section{}
 Skipped\dots
 \section{}
@@ -97,6 +99,270 @@ Note that not only does the welcome message mention that this user is an admin
 user must have elevated permissions.\\
 The \texttt{users.py} script connects to 'archer' and prints the list of users.
 
-\maketitle
+\section{}
+\subsection{Initial Static Analysis}
+We have started this part by analyzing (statically - ida) our target file \texttt{hw4\_client.exe}.\\
+At the start we try to get a general overview of the program:
+After the input credentials are given to the program,
+it requests us for a 4 letter command so
+we have found the procedure which finds this request.\\
+It appears to return a command code which is a number (enum essentially)
+which represents which command was given. We note that the
+PEEK command which we are interested in has command code 7.\\
+After the command is selected - we are also requested
+to input a 'file name' which is meant to be sent to the server.\\
+In the static analysis the volunerability is clear:\\
+The \texttt{scanf} call which reads this 'file name'
+has a write pointer onto the stack and while the output buffer
+has a constant size of about 16 KB; the scanf output
+is not bound in any way.\\
+The place where we are meant to insert this string will be our opening to take
+over the program.\\
+
+At the end of the injection process - we want
+the execution to jump to shellcode which we will write using the same buffer.\\
+The simplest solution would be to simply override the return address
+with the address at which the start of our shellcode will be located.\\
+The reason we have ended up using a slightly more compilcated solution then
+this was that our shellcode will be found on the stack - meaning that
+it's address might not be constant between different executions of the program.\\
+
+Considering this, our general plan is as follows:
+\begin{enumerate}
+    \item Find the exact offset between the buffer start and the return address.
+    \item Find a gadget containing a \texttt{jmp esp} instruction.
+    \item Place the gadget at that offset.
+    \item Place a relative jump command \texttt{jmp -300} right after where the return address was.
+    \item Place a \texttt{nop} slide between the buffer start and up to this point.
+    \item Place our shellcode somewhere in between where that relative jump will land and
+        where the return address should be.
+\end{enumerate}
+After these steps are done properly 
+the program execution should be as follows:
+\begin{center}
+    \begin{tabular}{|c|c|}
+        \hline
+        \textbf{Address} & \textbf{Instruction}\\
+        \hline
+        \texttt{.text <vulnerable\_proc>} & \texttt{call scanf}\\
+        & \dots\\
+        & \texttt{ret}\\
+        \hline
+        \texttt{.text <gadjet>}: & \texttt{jmp esp}\\
+        \hline
+        \texttt{.stack}: & \texttt{jmp -300}\\
+        & \texttt{nop}\\
+        & \dots\\
+        & \texttt{nop}\\
+        & \texttt{<shellcode start>}\\
+        \hline
+    \end{tabular}
+\end{center}
+Step 1: To find the exact offset we simply had to run the program once and
+stop it at the \texttt{ret} instruction we have found the required offset to be 16304.\\
+Step 2: To find the gadget - we have used an assembler to find the exact hexadecimal representation
+of this instruction and have serached for a match for it in the program's code section.
+We have found it at address: \texttt{0x62502028}.\\
+
+\subsection{Shellcode Injection Framework}
+For the rest of the steps we decided it will be helpful to create a
+python tool for generating the binary content which will be passed to the program.\\
+The tool can be found at the file \texttt{shellcode.py}.\\
+
+Inside we have define a class \texttt{ShellCodeGenerator} which has a few
+helpful methods for creating overflowing binary content.\\
+Genrally - the usage of the class is as follows: an instance is created,
+and the methods are used to describe the desigered binary content -
+then the \texttt{write\_to\_file} method is used to write 
+the generated binary content to a file.\\
+
+The most notable methods for the binary generation process are:
+\begin{itemize}
+    \item \texttt{append\_strline} - use to add the username, password and command at the start of the resulting input file.
+    In practice this simply appends the ascii encodings to the provided string to the binary stream.
+    \item \texttt{load\_from\_asm\_file} - this method assembles the content of the provided
+    assembly file, then appends the resulting binary content to the binary stream.
+    \item \texttt{append\_dword} - this method recives a 32-bit number - such as an address
+    and appends it to the bitstream - in little endian format.
+    \item \texttt{start\_buffer\_cnt} - this starts keeping track of the current offset
+    the binary stream (initialized to 0).
+    \item \texttt{comptete\_buffer\_to\_size} This completes the current 
+    buffer to the provided size by appending \texttt{nop} instructions.
+    In conjunction with \texttt{start\_buffer\_cnt} we can esaly ensure
+    we will override the return address at the correct offset without worrying about
+    what was the exact size of what we have inserted into the buffer so far.
+\end{itemize}
+
+After implementing this class, to create our binary input file we simply run:
+\begin{lstlisting}
+gen = ShellCodeGenerator()
+gen.append_strline("archer")
+gen.append_strline("FKGXJP0OCE1LKT3D")
+gen.append_strline("PEEK")
+
+gen.start_buffer_cnt()
+gen.nop_cascade(16004)
+gen.load_from_asm_file(asm_input_filename)
+gen.comptete_buffer_to_size(16304)#
+gen.append_dword(0x62502028)
+gen.append_asmline("jmp -330")
+gen.append_strline("")
+
+gen.write_to_file(output_filename)
+\end{lstlisting}
+
+After we have done all of this correctly - we can simply write
+the assembly for our shellcode in a file and run the script.\\
+
+\subsection{Shellcode Content}
+Our shellcode content can be found
+in assembly format at the file \texttt{shellcode.S}.\\
+The final binary content passed as input to the program is at the file \texttt{shellcode.bin}.\\
+
+The idea of our shellcode is simple: Find how the program
+normally sends requests to the server and attempt to replicate the same process
+- then jump back to the start of our shellcode - and by doing so -
+repeat the process in an infinite loop.\\
+
+The first part of doing so was an additional session of static analysis
+centered around finding where the program actually sends the requests to the server.\\
+A good first step for this was to search for invokations of the \texttt{send} and \texttt{recv}
+library function.\\
+We have found both in a function we have called \texttt{send\_recv}.\\
+From this function we can trace back where the socket object
+is given from to the library functions.\\
+Going back from \texttt{send\_recv}
+we encounter a function we have called \texttt{handle\_request};
+upon further inspection - it's API appears to be something like:
+\begin{lstlisting}
+handle_req(sock_ptr,cmd_num,req_content_buf,srv_out_buf,silent)
+\end{lstlisting}
+This seemed to us like a good place to start.
+We already know we want \texttt{cmd\_num=7}, \texttt{silent=0} -
+so we are left to deal with the rest of the arguments:
+\begin{itemize}
+    \item \texttt{sock\_ptr}: We have traced this parameter back to the \texttt{main} function
+    where it is initialized to the return value of the \texttt{connect} function.\\
+    So now we know how to get it ourselves in our shellcode.
+    \item \texttt{srv\_out\_buf}: For this and the following parameter we
+    notice that we will need to allocate a large buffer - so we decide to
+    first expand the stack enough to where the ESP was before the overflow -
+    to avoid overriding our own shellcode - the we allocate enough space for
+    both of these buffers on the new stack area. \texttt{srv\_out\_buf} requires no initialization from us.
+    \item \texttt{req\_content\_buf}: Since the value inside this buffer will be the request
+    itself - we want to get the content for it from the user - so we make an invokation to \texttt{scanf}.
+    To avoid using our own format string - we use the same format string that created the original
+    overflow
+    \footnote{somewhat ironically meaning the exact same overflow volunerability is still present in our shellcode}.
+\end{itemize}
+
+After we implement all of these parts, all that is left to do is to invoke
+\texttt{handle\_request} then jump back to the start of our shellcode.\\
+
+\subsection{From Input File to Interactive Loop}
+After succesfully implementing the prior section,
+we can append any list of inputs to the injection file and it will
+send each request line which is after the buffer overflow content
+as a request to the server and handle it.\\
+
+Since we want this process to be interactive - we create 
+a python script which enables us run as subprocess
+with an input file - followed by an interactive session 
+as soon as the file ends.\\
+The implementation for this script can be found at \texttt{run\_on\_input.py}.\\
+
+In conjunction with \texttt{shellcode.bin} created by our shellcode generation script
+we have an interactive loop for making \texttt{PEEK} requests to the server.
+
+\section{}
+The next step was to use our interactive \texttt{PEEK} request
+shell to achive remote code execution on the server.\\
+After playing with the shell for a few second we notice the following error message:\\
+\begin{lstlisting}
+PS C:\Users\pc\Desktop\Semesters\S8\Reverse-Engineering-236496\Homework4\Wet> python .\run_on_input.py
+Enter username: Enter password: Welcome archer (Admin)
+
+What would you like to do?
+[1] ECHO - ping the server with a custom message, receive the same.
+[2] TIME - Get local time from server point of view.
+[3] 2020 - Get a a new year greeting.
+[4] USER - Show details of registered users.
+[5] DMSG - Download message from the server.
+[6] PEEK - peek into the system.
+[7] LOAD - Load the content of the last peeked file.
+your choice (4 letters command code): aaa
+Get-ChildItem : Cannot find path 'C:\Users\idanRaz\RE_HW\generated\server\322218611-211515606\aaa' because it does not
+exist.
+At line:1 char:1
++ Get-ChildItem -Name -Path aaa
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (C:\Users\idanRa...1-211515606\aaa:String) [Get-ChildItem], ItemNotFound
+   Exception
+    + FullyQualifiedErrorId : PathNotFound,Microsoft.PowerShell.Commands.GetChildItemCommand
+\end{lstlisting}
+From this error message we learn two things:
+Firstly - we are interacting with PowerShell. Secondly
+- this shell attempts to run whatever \texttt{X} is given
+to it as a command \texttt{Get-ChildItem -Name -Path X}.\\
+Thus we can actually ignore the prefix of the command and just run a different one
+by appending it to the end of the command,
+so if we want to run \texttt{Y} we will actually pass on '\texttt{. ; Y}'
+and so the final input seen by powershell will be '\texttt{Get-ChildItem -Name -Path . ; Y}'
+which means \texttt{Y} should be run seperately.\\
+Since we wanted to avoid seeing the output of the first part of the command - we have also
+redirected it's output to \texttt{null}: '\texttt{. > \$null ; Y}'.\\
+
+So for example to run \texttt{ls}:
+\begin{lstlisting}
+...
+your choice (4 letters command code): . > $null ; ls
+
+    Directory: .
+
+Mode                LastWriteTime         Length Name
+----                -------------         ------ ----
+d-----        6/19/2023  10:10 AM                config
+d-----        6/19/2023  10:10 AM                database
+d-----       10/29/2020   9:57 AM                files
+d-----         6/9/2021   1:34 PM                source
+d-----        6/19/2023  10:10 AM                tools
+d-----        6/19/2023   3:52 PM                __pycache__
+-a----       12/24/2020   9:54 PM          24064 Capture.dll
+...
+\end{lstlisting}
+
+In order to get this functionality in an interactive format,
+we have created a new python script to wrap the \texttt{run\_on\_input.py} script:
+we have called it \texttt{server\_shell.py}; it simply
+runs \texttt{run\_on\_input.py} as a subprocess 
+and gives it the input from the end user prefixed with '\texttt{. > \$null ; }'.\\
+Additionally - if it sees \texttt{exit} it terminates, and
+if it sees \texttt{restart} - it closes the subprocess and starts over again.\\
+
+Now we have a full on shell to interact with the server.
+
+\section{Putting Down the Flames}
+After some exploring the server for a few minutes we find a suspiciously named
+file: \texttt{config/attack.config}.\\
+It's initial content was something like:
+\begin{lstlisting}    
+Fires: True
+Rivals: True
+Knights Infected: True
+Robber Hunted: False
+\end{lstlisting}
+
+So we wanted to change the content to the files so that flames will be off,
+hence we run:
+\begin{lstlisting}
+echo 'Fires: False' > config/attack.config
+echo 'Rivals: True' >> config/attack.config
+echo 'Knights Infected: False' >> config/attack.config
+echo 'Robber Hunted: False' >> config/attack.config
+cat config/attack.config
+\end{lstlisting}
+After doing this we see the file has the wanted content.\\
+
+We go to the side and Horray! The flames are off!\\
 
 \end{document}

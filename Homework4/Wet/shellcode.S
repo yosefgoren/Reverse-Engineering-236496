@@ -2,9 +2,7 @@
 sub esp, 17000
 mov ebp, esp
 
-//char srv_output[16500];
 sub esp, 16500
-//char path[500];
 sub esp, 500
 
 //scanf("%[^\n]s\n", path);
@@ -17,10 +15,6 @@ mov eax, 0x62504bd4
 call eax
 cmp eax, 1
 jne 0x0fffffff
-//if(EOF) exit();
-# mov ebx, 0x62501233
-# cmp eax, -1
-# jnz eax//exit if got eof
 pop eax
 pop eax
 
@@ -44,8 +38,3 @@ add esp, 16500
 add esp, 17000
 
 jmp -300
-
-
-# (98*3+91*3+84*3+97*3+100*3+97*2+90*2)/(3+3+3+3+3+2+2)
-# 94.21052631578948
-# 93.89473684210526
