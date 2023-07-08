@@ -100,6 +100,26 @@ user must have elevated permissions.\\
 The \texttt{users.py} script connects to 'archer' and prints the list of users.
 
 \section{}
+\subsection{Related Dry Questions}
+\begin{itemize}
+    \item \textbf{Socket Address:} We have detailed the process of finding the socket
+    at \ref{shellcont}.
+    \item  \textbf{Shellcode Stack:} Indeed our shellcode allocates
+    it's own local variables and makes call to procedures from the
+    original executable, and thus requires it's own stack. As detailed
+    at \ref{shellcont} - to solve this issue we have expanded the stack
+    to bellow our shellcode, and from that point we use that stack
+    normally as if that expansion was the initial stack frame.
+    \item \textbf{Finding \texttt{jmp esp}:} As described in the question,
+    the instructions of the dll are always loaded to the same addresses,
+    and hence if we run the described sample as it's own program - 
+    whatever address we find in the local memory of that process - 
+    will be identical to the addresses of those instructions
+    in the dll module which have been loaded to our target program.\\
+    The sample code first finds the module which we are interested in,
+    then inside it - it find the specific address of the code we are interested in.
+\end{itemize}
+
 \subsection{Initial Static Analysis}
 We have started this part by analyzing (statically - ida) our target file \texttt{hw4\_client.exe}.\\
 At the start we try to get a general overview of the program:
@@ -214,6 +234,7 @@ gen.write_to_file(output_filename)
 After we have done all of this correctly - we can simply write
 the assembly for our shellcode in a file and run the script.\\
 
+\label{shellcont}
 \subsection{Shellcode Content}
 Our shellcode content can be found
 in assembly format at the file \texttt{shellcode.S}.\\
