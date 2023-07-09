@@ -6,9 +6,6 @@ def server_shell():
 		while True:
 			usrin = input()
 			if usrin == "exit":
-				#kill the subprocess
-				# process.kill()
-				# exit(0)
 				break
 			if usrin == "restart":
 				restart_flag = True
@@ -21,12 +18,3 @@ def server_shell():
 
 if __name__ == "__main__":
 	server_shell()
-
-"""
-echo 'Fires: False' > config/attack.config
-echo 'Rivals: True' >> config/attack.config
-echo 'Knights Infected: False' >> config/attack.config
-echo 'Robber Hunted: False' >> config/attack.config
-cat config/attack.config
-
-"""

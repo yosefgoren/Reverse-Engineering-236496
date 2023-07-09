@@ -1,6 +1,7 @@
 from sys import argv
 import subprocess
 import shellcode
+import pathlib
 
 def get_input_or_exit_on_eof():
 	"""
@@ -32,7 +33,7 @@ if __name__ == "__main__":
 		then gets input from user and passes it to the exe.
 	"""
 	#check if different filenames given as cmd arg:
-	exec_filename = "hw4_client.exe"
+	exec_filename = "client.exe" if pathlib.Path('./client.exe').exists() else "hw4_client.exe"
 	input_filename = "shellcode.bin"
 	for arg in argv[1:]:
 		if arg.endswith(".bin"):

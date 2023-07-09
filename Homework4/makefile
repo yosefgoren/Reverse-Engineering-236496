@@ -5,15 +5,21 @@ USER=$(shell cat user.buildinfo)
 IDS=$(ID1)_$(ID2)
 IDS_MINUS=$(ID1)-$(ID2)
 
-Submission/$(IDS_MINUS).zip: Submission/$(IDS).pdf
-	cd Submission && zip $(IDS_MINUS).zip $(IDS).pdf
+Submission/$(IDS_MINUS).zip: Submission/dry.pdf Submission/details.txt
+	cp hw4_client.exe Submission
+	cp Wet/* Submission
+	cd Submission && zip -r $(IDS_MINUS).zip *
 	cp $@ /mnt/c/Users/$(USER)/Desktop/
 
-Submission/$(IDS).pdf: Report/main.pdf
+Submission/dry.pdf: Report/main.pdf
 	cp $^ $@
 
+Submission/details.txt:
+	echo $(ID2) > $@
+
+
 clean:
-	rm -rf Submission/$(IDS).pdf Submission/$(IDS_MINUS).zip
+	rm -rf Submission/dry.pdf Submission/$(IDS_MINUS).zip Submission/details.txt Submission/Wet
 
 %.buildinfo:
 	read -p "Enter content for $@: " __INPUT__ && echo $$__INPUT__ > $@
