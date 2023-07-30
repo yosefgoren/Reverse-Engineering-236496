@@ -22,12 +22,22 @@ int main(int argc, char** argv)
         printf("Usage: %s prog_name dll_name\n", argv[0]);
         return 1;
     }
+    int wait = 1;
+    int n_prefix_params = 0;
+    std::string first = std::string(argv[1]);
+    int delim_pos = first.find_first_of('=')+1;
+    if(first.substr(0, delim_pos) == "wait="){
+        wait = atoi(first.c_str()+delim_pos);//.substr(delim_pos, first.size() - delim_pos))
+        n_prefix_params++;
+    }
+    printf("sleeping for %d seconds...\n", wait);
+    wait = 1000 * wait;
 
-    LPSTR lpAppName = (LPSTR)argv[1];
-    DLL_PATH = (LPSTR)argv[2];
+    LPSTR lpAppName = (LPSTR)argv[1+ n_prefix_params];
+    DLL_PATH = (LPSTR)argv[2+ n_prefix_params];
     std::string args = std::string(lpAppName) + " ";
-    if (argc >= 4) {
-        for (int i = 3; i < argc; ++i) {
+    if (argc >= 4+n_prefix_params) {
+        for (int i = 3+n_prefix_params; i < argc; ++i) {
             args += (LPSTR)argv[i];
             args += " ";
         }
@@ -43,7 +53,7 @@ int main(int argc, char** argv)
         return 1;
     }
 
-    Sleep(1000); // Let the DLL finish loading
+    Sleep(wait); // Let the DLL finish loading
     ResumeThread(pi.hThread);
     printf("Injected dll successfully\n");
     return 0;
