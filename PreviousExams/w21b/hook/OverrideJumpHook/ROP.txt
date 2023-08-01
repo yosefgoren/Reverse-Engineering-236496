@@ -1,0 +1,14 @@
+V: <addr or string "MyVirtAddr">
+V: garbage will be 'ecx' then 'edi'
+G: mov [ebp+12], edi
+G: push eax
+G: mov [ebp+12], ecx
+G: mov ebp, esp
+
+G: pop esi
+G: pop edi
+
+V: <addr of GetProcAddr>
+G: pop eax
+G: ecx, [ecx]
+G: ecx, [ecx]
