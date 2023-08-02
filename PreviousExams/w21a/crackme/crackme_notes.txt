@@ -1,0 +1,3 @@
+* I see characters for U, D, R, L. I see a place for user to enter a single character. Likely a boad game where the user can move in each direction.
+* Additional potential board characters: 'X', '@', '.'
+* final condition before finish print: var_a = 2
